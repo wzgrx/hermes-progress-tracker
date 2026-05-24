@@ -32,7 +32,7 @@ import urllib.request
 from pathlib import Path
 
 # --- Config ---
-SIDECAR_BASE = os.environ.get("HERMES_SIDECAR_URL", "http://localhost:18900")
+SIDECAR_BASE = os.environ.get("HERMES_SIDECAR_URL", "http://localhost:8765")
 DEFAULT_INTERVAL = 5  # seconds between checks
 HEARTBEAT_INTERVAL = 30  # seconds between heartbeats when no progress found
 PROGRESS_PATTERNS = [

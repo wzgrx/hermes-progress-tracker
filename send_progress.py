@@ -13,7 +13,7 @@ import os
 import sys
 import urllib.request
 
-SIDECAR_BASE = os.environ.get("HERMES_SIDECAR_URL", "http://localhost:18900")
+SIDECAR_BASE = os.environ.get("HERMES_SIDECAR_URL", "http://localhost:8765")
 
 
 def main():
