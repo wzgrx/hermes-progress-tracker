@@ -6,6 +6,7 @@ Usage:
     send_progress.py download 45 "Downloading model..."
     send_progress.py compile 100 "Build complete!"
     send_progress.py --message-id om_xxx download 60 "60% done" 120
+    send_progress.py --title "Download Model" download 45 "45% done" 120
 """
 
 import json
@@ -20,15 +21,28 @@ def main():
     args = sys.argv[1:]
 
     message_id = ""
-    if args and args[0] == "--message-id":
-        if len(args) < 2:
-            print("ERROR: --message-id requires a value", file=sys.stderr)
+    title = ""
+
+    while args and args[0].startswith("--"):
+        option = args[0]
+        if option == "--message-id":
+            if len(args) < 2:
+                print("ERROR: --message-id requires a value", file=sys.stderr)
+                sys.exit(1)
+            message_id = args[1]
+            args = args[2:]
+        elif option == "--title":
+            if len(args) < 2:
+                print("ERROR: --title requires a value", file=sys.stderr)
+                sys.exit(1)
+            title = args[1]
+            args = args[2:]
+        else:
+            print(f"ERROR: Unknown option {option}", file=sys.stderr)
             sys.exit(1)
-        message_id = args[1]
-        args = args[2:]
 
     if len(args) < 2:
-        print("Usage: send_progress.py [--message-id <id>] <tool_name> <percent> [detail] [eta]",
+        print("Usage: send_progress.py [--message-id <id>] [--title <title>] <tool_name> <percent> [detail] [eta]",
               file=sys.stderr)
         sys.exit(1)
 
@@ -50,6 +64,8 @@ def main():
     }
     if message_id:
         data["message_id"] = message_id
+    if title:
+        data["title"] = title
 
     try:
         req = urllib.request.Request(
@@ -61,7 +77,8 @@ def main():
         resp = urllib.request.urlopen(req, timeout=5)
         result = json.loads(resp.read())
         if result.get("ok"):
-            print(f"✅ {tool_name}: {percent}% pushed to card")
+            print(f"✅ {tool_name}: {percent}% pushed to card" +
+                  (f" (title: {title})" if title else ""))
         else:
             print(f"⚠️  {result.get('error', 'unknown error')}")
     except Exception as e:
